@@ -1,13 +1,19 @@
 # font-list
 
-`font-list` is a Node.js package for getting system font list.
+`font-list` is a Node.js package for listing the fonts available on your system.
 
-Current version is only available on **macOS**, not support Windows or Linux.
+Current version supports **macOS** only, can not be used on Windows or Linux yet.
+
+## Install
+
+```bash
+npm install font-list
+```
 
 ## Usage
 
 ```js
-require('./index').getFonts((err, fonts) => {
+require('font-list').getFonts((err, fonts) => {
     if (err) {
         console.log(err);
     } else {
@@ -16,7 +22,7 @@ require('./index').getFonts((err, fonts) => {
 });
 ```
 
-The output looks like:
+The return value `fonts` is an Array, looks like:
 
 ```
 [ '"Adobe Arabic"',

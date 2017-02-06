@@ -5,13 +5,6 @@
 
 'use strict';
 
-/**
- * @author oldj
- * @blog http://oldj.net
- */
-
-'use strict';
-
 const path = require('path');
 const execFile = require('child_process').execFile;
 const platform = process.platform;
