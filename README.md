@@ -13,13 +13,15 @@ npm install font-list
 ## Usage
 
 ```js
-require('font-list').getFonts((err, fonts) => {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log(fonts);
-    }
-});
+const fontList = require('font-list')
+
+fontList.getFonts()
+  .then(fonts => {
+    console.log(fonts)
+  })
+  .catch(err => {
+    console.log(err)
+  })
 ```
 
 The return value `fonts` is an Array, looks like:
