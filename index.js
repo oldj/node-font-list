@@ -6,13 +6,17 @@
 'use strict'
 
 const platform = process.platform
+const for_darwin = require('./libs/darwin')
+const for_win32 = require('./libs/win32')
 
-exports.getFonts = (callback) => Promise.resolve().then(() => {
+exports.getFonts = () => Promise.resolve().then(() => {
   if (platform === 'darwin') {
-    return require('./libs/darwin')()
+    return for_darwin()
+
+  } else if (platform === 'win32') {
+    return for_win32()
+
   } else {
-    setTimeout(() => {
-      callback(`Error: font-list not support on ${platform}.`)
-    }, 0)
+    return Promise.reject(`Error: font-list not support on ${platform}.`)
   }
 })

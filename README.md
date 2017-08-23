@@ -2,7 +2,7 @@
 
 `font-list` is a Node.js package for listing the fonts available on your system.
 
-Current version supports **macOS** only, can not be used on Windows or Linux yet.
+Current version supports **macOS** and **Windows** only, can not be used on Linux yet.
 
 ## Install
 
