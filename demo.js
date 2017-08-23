@@ -5,10 +5,10 @@
 
 'use strict'
 
-require('./index').getFonts((err, fonts) => {
-  if (err) {
-    console.log(err)
-  } else {
+require('./index').getFonts()
+  .then(fonts => {
     console.log(fonts)
-  }
-})
+  })
+  .catch(err => {
+    console.log(err)
+  })
