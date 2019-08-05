@@ -16,9 +16,9 @@ function tryToGetFonts (s) {
   let fonts = []
   let m = s.match(/\([\s\S]+?\)/)
   if (m) {
-    let a = m[0].replace(/\(|\)/g, '').split('\n')
+    let a = m[0].replace(/[()]/g, '').split('\n')
     fonts = fonts.concat(a.map(i => {
-      return i.replace(/^\s+|\s+$/g, '').replace(/\,$/, '')
+      return i.replace(/^\s+|\s+$/g, '').replace(/,$/, '')
     }))
   }
 
