@@ -6,6 +6,8 @@
 
 'use strict'
 
+const os = require('os')
+const fs = require('fs')
 const path = require('path')
 const exec = require('child_process').exec
 
@@ -40,10 +42,21 @@ function tryToGetFonts (s) {
   return a.filter(i => i)
 }
 
+function writeToTmpDir (fn) {
+  let tmp_fn = path.join(os.tmpdir(), 'node-font-list-fonts.vbs')
+  fs.copyFileSync(fn, tmp_fn)
+  return tmp_fn
+}
+
 module.exports = () => new Promise((resolve, reject) => {
   let fn = path.join(__dirname, 'fonts.vbs')
   //let c = fs.readFileSync(path.join('for_win', 'fonts.vbs'), 'utf-8')
   //fs.writeFileSync(fn, c, 'utf-8')
+
+  const is_in_asar = fn.includes('app.asar')
+  if (is_in_asar) {
+    fn = writeToTmpDir(fn)
+  }
 
   let cmd = `cscript "${fn}"`
   exec(cmd, (err, stdout, stderr) => {
