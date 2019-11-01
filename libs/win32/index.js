@@ -10,6 +10,9 @@ const os = require('os')
 const fs = require('fs')
 const path = require('path')
 const exec = require('child_process').exec
+const util = require('util')
+
+const p_copyFile = util.promisify(fs.copyFile)
 
 function tryToGetFonts (s) {
   let a = s.split('\n')
@@ -42,41 +45,48 @@ function tryToGetFonts (s) {
   return a.filter(i => i)
 }
 
-function writeToTmpDir (fn) {
+async function writeToTmpDir (fn) {
   let tmp_fn = path.join(os.tmpdir(), 'node-font-list-fonts.vbs')
-  fs.copyFileSync(fn, tmp_fn)
+  await p_copyFile(fn, tmp_fn)
   return tmp_fn
 }
 
-module.exports = () => new Promise((resolve, reject) => {
+module.exports = async () => {
+  /*
+  or use Powershell to get the font list:
+    (New-Object System.Drawing.Text.InstalledFontCollection).Families
+  @see https://superuser.com/questions/760627/how-to-list-installed-font-families
+  */
+
   let fn = path.join(__dirname, 'fonts.vbs')
-  //let c = fs.readFileSync(path.join('for_win', 'fonts.vbs'), 'utf-8')
-  //fs.writeFileSync(fn, c, 'utf-8')
 
   const is_in_asar = fn.includes('app.asar')
   if (is_in_asar) {
-    fn = writeToTmpDir(fn)
+    fn = await writeToTmpDir(fn)
   }
 
-  let cmd = `cscript "${fn}"`
-  exec(cmd, (err, stdout, stderr) => {
-    let fonts = []
+  return new Promise((resolve, reject) => {
+    let cmd = `cscript "${fn}"`
 
-    if (err) {
-      reject(err)
-      return
-    }
+    exec(cmd, (err, stdout, stderr) => {
+      let fonts = []
 
-    if (stdout) {
-      //require('electron').dialog.showMessageBox({message: 'stdout: ' + stdout})
-      fonts = fonts.concat(tryToGetFonts(stdout))
-    }
-    if (stderr) {
-      //require('electron').dialog.showMessageBox({message: 'stderr: ' + stderr})
-      fonts = fonts.concat(tryToGetFonts(stderr))
-    }
+      if (err) {
+        reject(err)
+        return
+      }
 
-    fonts.sort()
-    resolve(fonts)
+      if (stdout) {
+        //require('electron').dialog.showMessageBox({message: 'stdout: ' + stdout})
+        fonts = fonts.concat(tryToGetFonts(stdout))
+      }
+      if (stderr) {
+        //require('electron').dialog.showMessageBox({message: 'stderr: ' + stderr})
+        fonts = fonts.concat(tryToGetFonts(stderr))
+      }
+
+      fonts.sort()
+      resolve(fonts)
+    })
   })
-})
+}
