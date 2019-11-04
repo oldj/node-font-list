@@ -15,7 +15,7 @@ async function binaryExists(binary) {
 }
 
 module.exports = async () => {
-  const fcListBinary = binaryExists('fc-list')
+  const fcListBinary = await binaryExists('fc-list')
     ? 'fc-list'
     : 'fc-list2';
 
