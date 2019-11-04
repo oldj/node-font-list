@@ -9,8 +9,17 @@ const util = require('util')
 
 const pexec = util.promisify(exec)
 
+async function binaryExists(binary) {
+  const { stdout } = await pexec(`whereis ${binary}`);
+  return stdout.length > (binary.length + 2);
+}
+
 module.exports = async () => {
-  let r = await pexec('fc-list2')
+  const fcListBinary = await binaryExists('fc-list')
+    ? 'fc-list'
+    : 'fc-list2';
+
+  let r = await pexec(fcListBinary)
   let lines = r.stdout.split('\n')
   lines = lines
     .map(ln => ln.split(':')[1])
