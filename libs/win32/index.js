@@ -9,7 +9,7 @@
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
-const exec = require('child_process').exec
+const execFile = require('child_process').execFile
 const util = require('util')
 
 const p_copyFile = util.promisify(fs.copyFile)
@@ -66,9 +66,9 @@ module.exports = async () => {
   }
 
   return new Promise((resolve, reject) => {
-    let cmd = `cscript "${fn}"`
+    let cmd = `cscript`
 
-    exec(cmd, (err, stdout, stderr) => {
+    execFile(cmd, [fn], (err, stdout, stderr) => {
       let fonts = []
 
       if (err) {
