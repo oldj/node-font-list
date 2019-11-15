@@ -27,6 +27,14 @@ exports.getFonts = async () => {
   }
 
   fonts = fonts.map(i => {
+
+    // parse unicode names, eg: '"\\U559c\\U9e4a\\U805a\\U73cd\\U4f53"' -> '"喜鹊聚珍体"'
+    try {
+      i = i.replace(/\\u([\da-f]{4})/ig, (m, s) => String.fromCharCode(parseInt(s, 16)))
+    } catch (e) {
+      console.log(e)
+    }
+
     if (i.includes(' ') && !i.startsWith('"')) {
       i = `"${i}"`
     }
