@@ -26,6 +26,12 @@ module.exports = async () => {
     .filter(i => i)
     .map(i => i.split(',')[0].trim())
     .filter(i => i)
+    .map(i => {
+      if (i.includes(' ') && !i.startsWith('"')) {
+        i = `"${i}"`
+      }
+      return i
+    })
 
   lines = Array.from(new Set(lines))
   lines.sort()

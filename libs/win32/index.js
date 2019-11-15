@@ -35,7 +35,7 @@ function tryToGetFonts (s) {
       .replace(/(Regular|常规)$/i, '')
       .replace(/^\s+|\s+$/g, '')
 
-    if (i.includes(' ')) {
+    if (i.includes(' ') && !i.startsWith('"')) {
       i = `"${i}"`
     }
 
