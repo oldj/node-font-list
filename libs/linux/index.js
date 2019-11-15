@@ -9,15 +9,15 @@ const util = require('util')
 
 const pexec = util.promisify(exec)
 
-async function binaryExists(binary) {
-  const { stdout } = await pexec(`whereis ${binary}`);
-  return stdout.length > (binary.length + 2);
+async function binaryExists (binary) {
+  const {stdout} = await pexec(`whereis ${binary}`)
+  return stdout.length > (binary.length + 2)
 }
 
 module.exports = async () => {
   const fcListBinary = await binaryExists('fc-list')
     ? 'fc-list'
-    : 'fc-list2';
+    : 'fc-list2'
 
   let r = await pexec(fcListBinary)
   let lines = r.stdout.split('\n')
@@ -26,15 +26,6 @@ module.exports = async () => {
     .filter(i => i)
     .map(i => i.split(',')[0].trim())
     .filter(i => i)
-    .map(i => {
-      if (i.includes(' ') && !i.startsWith('"')) {
-        i = `"${i}"`
-      }
-      return i
-    })
 
-  lines = Array.from(new Set(lines))
-  lines.sort()
-
-  return lines
+  return Array.from(new Set(lines))
 }

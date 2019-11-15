@@ -35,10 +35,6 @@ function tryToGetFonts (s) {
       .replace(/(Regular|常规)$/i, '')
       .replace(/^\s+|\s+$/g, '')
 
-    if (i.includes(' ') && !i.startsWith('"')) {
-      i = `"${i}"`
-    }
-
     return i
   })
 
@@ -85,7 +81,6 @@ module.exports = async () => {
         fonts = fonts.concat(tryToGetFonts(stderr))
       }
 
-      fonts.sort()
       resolve(fonts)
     })
   })

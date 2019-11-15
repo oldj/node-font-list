@@ -40,19 +40,8 @@ module.exports = () => new Promise((resolve, reject) => {
       fonts = fonts.concat(tryToGetFonts(stderr))
     }
 
-    let dict = {}
-    fonts.map(i => {
-      if (i) {
-        dict[i] = 1
-      }
-    })
-    fonts = []
-    for (let k in dict) {
-      if (dict.hasOwnProperty(k) && !font_exceptions.includes(k)) {
-        fonts.push(k)
-      }
-    }
-    fonts.sort()
+    fonts = Array.from(new Set(fonts)).filter(i => i)
+
     resolve(fonts)
   })
 })
