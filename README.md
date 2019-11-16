@@ -37,4 +37,4 @@ The return value `fonts` is an Array, looks like:
   ]
 ```
 
-If the font name contains spaces, the name will be wrapped in double quotes, otherwise there will be no double quotes, for example: `'"Adobe Arabic"'`，`'Arial'`。
+If the font name contains spaces, the name will be wrapped in double quotes, otherwise there will be no double quotes, for example: `'"Adobe Arabic"'`, `'Arial'`.
