@@ -8,8 +8,8 @@
 
 const path = require('path')
 const execFile = require('child_process').execFile
-const bin = path.join(__dirname, 'fontlist')
 
+const bin = path.join(__dirname, 'fontlist')
 const font_exceptions = ['iconfont']
 
 function tryToGetFonts (s) {
@@ -40,7 +40,8 @@ module.exports = () => new Promise((resolve, reject) => {
       fonts = fonts.concat(tryToGetFonts(stderr))
     }
 
-    fonts = Array.from(new Set(fonts)).filter(i => i)
+    fonts = Array.from(new Set(fonts))
+      .filter(i => i && !font_exceptions.includes(i))
 
     resolve(fonts)
   })
