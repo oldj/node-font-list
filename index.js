@@ -40,7 +40,10 @@ exports.getFonts = async () => {
     }
     return i
   })
-  fonts.sort()
+
+  fonts.sort((a, b) => {
+    return a.replace(/^['"]+/, '') < b.replace(/^['"]+/, '') ? -1 : 1
+  })
 
   return fonts
 }
