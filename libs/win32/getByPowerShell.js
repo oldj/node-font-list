@@ -30,7 +30,7 @@ const parse = (str) => {
 module.exports = () => new Promise((resolve, reject) => {
   let cmd = `powershell -command "[System.Reflection.Assembly]::LoadWithPartialName(\\"System.Drawing\\");(New-Object System.Drawing.Text.InstalledFontCollection).Families"`
 
-  exec(cmd, (err, stdout, stderr) => {
+  exec(cmd, {maxBuffer: 1024 * 1024 * 10}, (err, stdout, stderr) => {
     if (err) {
       reject(err)
       return

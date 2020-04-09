@@ -56,7 +56,7 @@ module.exports = async () => {
   return new Promise((resolve, reject) => {
     let cmd = `cscript`
 
-    execFile(cmd, [fn], (err, stdout, stderr) => {
+    execFile(cmd, [fn], {maxBuffer: 1024 * 1024 * 10}, (err, stdout, stderr) => {
       let fonts = []
 
       if (err) {

@@ -26,7 +26,7 @@ function tryToGetFonts (s) {
 }
 
 module.exports = () => new Promise((resolve, reject) => {
-  execFile(bin, (error, stdout, stderr) => {
+  execFile(bin, {maxBuffer: 1024 * 1024 * 10}, (error, stdout, stderr) => {
     if (error) {
       reject(error)
       return
