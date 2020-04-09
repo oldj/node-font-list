@@ -19,7 +19,7 @@ module.exports = async () => {
     ? 'fc-list'
     : 'fc-list2'
 
-  let r = await pexec(fcListBinary)
+  let r = await pexec(fcListBinary, {maxBuffer: 1024*1024*10})
   let lines = r.stdout.split('\n')
   lines = lines
     .map(ln => ln.split(':')[1])
