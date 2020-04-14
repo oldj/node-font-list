@@ -42,7 +42,7 @@ exports.getFonts = async () => {
   })
 
   fonts.sort((a, b) => {
-    return a.replace(/^['"]+/, '') < b.replace(/^['"]+/, '') ? -1 : 1
+    return a.replace(/^['"]+/, '').toLocaleLowerCase() < b.replace(/^['"]+/, '').toLocaleLowerCase() ? -1 : 1
   })
 
   return fonts
