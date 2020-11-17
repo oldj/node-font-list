@@ -28,7 +28,7 @@ const parse = (str) => {
   (New-Object System.Drawing.Text.InstalledFontCollection).Families
 */
 module.exports = () => new Promise((resolve, reject) => {
-  let cmd = `powershell -command "chcp 65001;[System.Reflection.Assembly]::LoadWithPartialName(\\"System.Drawing\\");(New-Object System.Drawing.Text.InstalledFontCollection).Families"`
+  let cmd = `powershell -command "chcp 65001;[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing');(New-Object System.Drawing.Text.InstalledFontCollection).Families"`
 
   exec(cmd, {maxBuffer: 1024 * 1024 * 10}, (err, stdout, stderr) => {
     if (err) {
