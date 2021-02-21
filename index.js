@@ -9,8 +9,12 @@ const platform = process.platform
 const for_darwin = require('./libs/darwin')
 const for_win32 = require('./libs/win32')
 const for_linux = require('./libs/linux')
+const defaultOptions = {
+  disableQuoting: false
+};
 
-exports.getFonts = async () => {
+exports.getFonts = async (options) => {
+  options = Object.assign({}, defaultOptions, options);
   let fonts
 
   if (platform === 'darwin') {
@@ -35,9 +39,14 @@ exports.getFonts = async () => {
       console.log(e)
     }
 
-    if (i.includes(' ') && !i.startsWith('"')) {
+    if (options && options.disableQuoting) {
+      if (i.startsWith('"') && i.endsWith('"')) {
+        i = `${i.substr(1, i.length - 2)}`;
+      }
+    } else if (i.includes(' ') && !i.startsWith('"')) {
       i = `"${i}"`
     }
+
     return i
   })
 
