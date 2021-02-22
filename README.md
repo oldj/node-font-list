@@ -38,3 +38,17 @@ The return value `fonts` is an Array, looks like:
 ```
 
 If the font name contains spaces, the name will be wrapped in double quotes, otherwise there will be no double quotes, for example: `'"Adobe Arabic"'`, `'Arial'`.
+
+If you don't want font names that contains spaces to be wrapped in double quotes, pass the options object with `disableQuoting` set to true when calling the method `getFonts`:
+
+```js
+const fontList = require('font-list')
+
+fontList.getFonts({ disableQuoting: true })
+  .then(fonts => {
+    console.log(fonts)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+```
