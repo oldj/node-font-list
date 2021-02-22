@@ -12,7 +12,7 @@ const util = require('util')
 
 const p_copyFile = util.promisify(fs.copyFile)
 
-function tryToGetFonts (s) {
+function tryToGetFonts(s) {
   let a = s.split('\n')
   if (a[0].includes('Microsoft')) {
     a.splice(0, 3)
@@ -39,7 +39,7 @@ function tryToGetFonts (s) {
   return a.filter(i => i)
 }
 
-async function writeToTmpDir (fn) {
+async function writeToTmpDir(fn) {
   let tmp_fn = path.join(os.tmpdir(), 'node-font-list-fonts.vbs')
   await p_copyFile(fn, tmp_fn)
   return tmp_fn
@@ -56,7 +56,7 @@ module.exports = async () => {
   return new Promise((resolve, reject) => {
     let cmd = `cscript`
 
-    execFile(cmd, [fn], {maxBuffer: 1024 * 1024 * 10}, (err, stdout, stderr) => {
+    execFile(cmd, [fn], { maxBuffer: 1024 * 1024 * 10 }, (err, stdout, stderr) => {
       let fonts = []
 
       if (err) {

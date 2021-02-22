@@ -12,7 +12,7 @@ const execFile = require('child_process').execFile
 const bin = path.join(__dirname, 'fontlist')
 const font_exceptions = ['iconfont']
 
-function tryToGetFonts (s) {
+function tryToGetFonts(s) {
   let fonts = []
   let m = s.match(/\([\s\S]+?\)/)
   if (m) {
@@ -26,7 +26,7 @@ function tryToGetFonts (s) {
 }
 
 module.exports = () => new Promise((resolve, reject) => {
-  execFile(bin, {maxBuffer: 1024 * 1024 * 10}, (error, stdout, stderr) => {
+  execFile(bin, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
     if (error) {
       reject(error)
       return

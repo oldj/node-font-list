@@ -5,16 +5,19 @@
 
 'use strict'
 
-const platform = process.platform
 const for_darwin = require('./libs/darwin')
 const for_win32 = require('./libs/win32')
 const for_linux = require('./libs/linux')
+
+const platform = process.platform
+
 const defaultOptions = {
   disableQuoting: false
-};
+}
 
 exports.getFonts = async (options) => {
-  options = Object.assign({}, defaultOptions, options);
+  options = Object.assign({}, defaultOptions, options)
+
   let fonts
 
   if (platform === 'darwin') {
@@ -31,7 +34,6 @@ exports.getFonts = async (options) => {
   }
 
   fonts = fonts.map(i => {
-
     // parse unicode names, eg: '"\\U559c\\U9e4a\\U805a\\U73cd\\U4f53"' -> '"喜鹊聚珍体"'
     try {
       i = i.replace(/\\u([\da-f]{4})/ig, (m, s) => String.fromCharCode(parseInt(s, 16)))
@@ -41,7 +43,7 @@ exports.getFonts = async (options) => {
 
     if (options && options.disableQuoting) {
       if (i.startsWith('"') && i.endsWith('"')) {
-        i = `${i.substr(1, i.length - 2)}`;
+        i = `${i.substr(1, i.length - 2)}`
       }
     } else if (i.includes(' ') && !i.startsWith('"')) {
       i = `"${i}"`
