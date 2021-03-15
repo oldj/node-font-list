@@ -14,12 +14,11 @@ const font_exceptions = ['iconfont']
 
 function tryToGetFonts(s) {
   let fonts = []
-  let m = s.match(/\([\s\S]+?\)/)
+  let m = s.match(/\(([\s\S]+)\)/)
   if (m) {
-    let a = m[0].replace(/[()]/g, '').split('\n')
-    fonts = fonts.concat(a.map(i => {
-      return i.replace(/^\s+|\s+$/g, '').replace(/,$/, '')
-    }))
+    fonts = m[1].split('\n')
+      .map(i => i.trim())
+      .map(i => i.replace(/,$/, ''))
   }
 
   return fonts
