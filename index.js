@@ -8,16 +8,16 @@
 const platform = process.platform
 
 let getFontsFunc
-switch(platform) {
+switch (platform) {
   case 'darwin':
     getFontsFunc = require('./libs/darwin')
-    break;
+    break
   case 'win32':
     getFontsFunc = require('./libs/win32')
-    break;
+    break
   case 'linux':
-    getFontsFunc = require('./libs/linux');
-    break;
+    getFontsFunc = require('./libs/linux')
+    break
   default:
     throw new Error(`Error: font-list can not run on ${platform}.`)
 }
@@ -29,7 +29,7 @@ const defaultOptions = {
 exports.getFonts = async (options) => {
   options = Object.assign({}, defaultOptions, options)
 
-  let fonts = await getFontsFunc();
+  let fonts = await getFontsFunc()
 
   fonts = fonts.map(i => {
     // parse unicode names, eg: '"\\U559c\\U9e4a\\U805a\\U73cd\\U4f53"' -> '"喜鹊聚珍体"'
