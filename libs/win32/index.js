@@ -11,12 +11,12 @@ const methods = [
   require('./getByVBS')
 ]
 
-module.exports = async () => {
+module.exports = async (options) => {
   let fonts = []
 
   for (let method of methods) {
     try {
-      fonts = await method()
+      fonts = await method(options)
       break
     } catch (e) {
       console.log(e)
