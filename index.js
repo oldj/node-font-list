@@ -29,7 +29,7 @@ const defaultOptions = {
 exports.getFonts = async (options) => {
   options = Object.assign({}, defaultOptions, options)
 
-  let fonts = await getFontsFunc(options)
+  let fonts = await getFontsFunc()
 
   fonts = fonts.map(i => {
     // parse unicode names, eg: '"\\U559c\\U9e4a\\U805a\\U73cd\\U4f53"' -> '"喜鹊聚珍体"'

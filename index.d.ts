@@ -6,7 +6,6 @@
 
 interface IOptions {
   disableQuoting: boolean;
-  fallbackEncoding: string; // Fallback encoding, only for windows, the default value is "cp936"
 }
 
 type FontList = string[]

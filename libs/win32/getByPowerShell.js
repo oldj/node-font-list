@@ -5,7 +5,6 @@
  */
 
 const exec = require('child_process').exec
-const iconv = require('iconv-lite')
 
 const parse = (str) => {
   let fonts = []
@@ -31,7 +30,7 @@ const parse = (str) => {
   [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
   (New-Object System.Drawing.Text.InstalledFontCollection).Families
 */
-module.exports = (options) => new Promise((resolve, reject) => {
+module.exports = () => new Promise((resolve, reject) => {
   let cmd = `powershell -command "chcp 65001;[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing');(New-Object System.Drawing.Text.InstalledFontCollection).Families"`
 
   exec(cmd, { maxBuffer: 1024 * 1024 * 10 }, (err, stdout, stderr) => {
@@ -40,11 +39,6 @@ module.exports = (options) => new Promise((resolve, reject) => {
       return
     }
 
-    let t = iconv.decode(Buffer.from(stdout, 'binary'), 'utf8')
-    if (t.includes('\uFFFD')) {
-      t = iconv.decode(Buffer.from(stdout, 'binary'), options.fallbackEncoding || 'cp936')
-    }
-
-    resolve(parse(t))
+    resolve(parse(stdout))
   })
 })

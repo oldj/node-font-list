@@ -15,8 +15,5 @@
     "url": "git+https://github.com/oldj/node-font-list"
   },
   "author": "oldj",
-  "license": "MIT",
-  "dependencies": {
-    "iconv-lite": "^0.6.3"
-  }
+  "license": "MIT"
 }
