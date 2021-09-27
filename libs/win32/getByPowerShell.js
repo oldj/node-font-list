@@ -8,20 +8,8 @@ const exec = require('child_process').exec
 
 const parse = (str) => {
   let fonts = []
-  str.split('\n').map(ln => {
-    ln = ln.trim()
-    if (!ln || !ln.includes(':')) return
-
-    ln = ln.split(':')
-    if (ln.length !== 2 || ln[0].trim() !== 'Name') return
-
-    let font_name = ln[1].trim()
-    if (font_name) {
-      fonts.push(font_name)
-    }
-  })
-
-  return fonts
+  str.split('\n').map(ln => fonts.push(ln.trim()))
+  return fonts.filter(f => !!f && !f.includes(':'))
 }
 
 /*
@@ -31,7 +19,7 @@ const parse = (str) => {
   (New-Object System.Drawing.Text.InstalledFontCollection).Families
 */
 module.exports = () => new Promise((resolve, reject) => {
-  let cmd = `powershell -command "chcp 65001;[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing');(New-Object System.Drawing.Text.InstalledFontCollection).Families"`
+  let cmd = `powershell -command "chcp 65001;Add-Type -AssemblyName PresentationCore;$families=[Windows.Media.Fonts]::SystemFontFamilies;foreach($family in $families){$name='';if(!$family.FamilyNames.TryGetValue([Windows.Markup.XmlLanguage]::GetLanguage('zh-cn'),[ref]$name)){$name=$family.FamilyNames[[Windows.Markup.XmlLanguage]::GetLanguage('en-us')]}echo $name}"`
 
   exec(cmd, { maxBuffer: 1024 * 1024 * 10 }, (err, stdout, stderr) => {
     if (err) {
