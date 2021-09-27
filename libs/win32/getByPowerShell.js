@@ -7,9 +7,10 @@
 const exec = require('child_process').exec
 
 const parse = (str) => {
-  let fonts = []
-  str.split('\n').map(ln => fonts.push(ln.trim()))
-  return fonts.filter(f => !!f && !f.includes(':'))
+  return str
+    .split('\n')
+    .map(ln => ln.trim())
+    .filter(f => f && !f.includes(':'))
 }
 
 /*
