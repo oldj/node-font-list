@@ -17,7 +17,7 @@ module.exports = async () => {
   for (let method of methods) {
     try {
       fonts = await method()
-      break
+      if (fonts.length > 0) break
     } catch (e) {
       console.log(e)
     }
