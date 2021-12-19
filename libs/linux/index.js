@@ -19,13 +19,10 @@ module.exports = async () => {
     ? 'fc-list'
     : 'fc-list2'
 
-  let r = await pexec(fcListBinary, { maxBuffer: 1024 * 1024 * 10 })
-  let lines = r.stdout.split('\n')
-  lines = lines
-    .map(ln => ln.split(':')[1])
-    .filter(i => i)
-    .map(i => i.split(',')[0].trim())
-    .filter(i => i)
+  const cmd = fcListBinary + ' -f "%{family[0]}\\n"'
 
-  return Array.from(new Set(lines))
+  const { stdout } = await pexec(cmd, { maxBuffer: 1024 * 1024 * 10 })
+  const fonts = stdout.split('\n').filter(f => !!f)
+
+  return Array.from(new Set(fonts))
 }
