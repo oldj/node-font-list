@@ -1,6 +1,6 @@
 {
   "name": "font-list",
-  "version": "1.4.3",
+  "version": "1.4.5",
   "description": "list system fonts",
   "main": "index.js",
   "scripts": {
