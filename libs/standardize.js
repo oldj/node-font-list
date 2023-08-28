@@ -18,7 +18,7 @@ module.exports = function (fonts, options) {
       if (i.startsWith('"') && i.endsWith('"')) {
         i = `${i.substr(1, i.length - 2)}`
       }
-    } else if (i.match(/s\+/) && !i.startsWith('"')) {
+    } else if (i.match(/[\s()+]/) && !i.startsWith('"')) {
       i = `"${i}"`
     }
 
