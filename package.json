@@ -1,8 +1,16 @@
 {
   "name": "font-list",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "list system fonts",
   "main": "index.js",
+  "module": "index.mjs",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "types": "index.d.ts",
   "scripts": {
     "demo": "node demo.js",
     "test": "echo \"Error: no test specified\" && exit 1",
