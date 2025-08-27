@@ -1,5 +1,4 @@
 /**
- * index
  * @author oldj
  * @blog https://oldj.net
  */
@@ -14,6 +13,7 @@ const util = require('util')
 const pexec = util.promisify(exec)
 
 const bin = path.join(__dirname, 'fontlist')
+const bin2 = path.join(__dirname, 'fontlist2')
 const font_exceptions = ['iconfont']
 
 async function getBySystemProfiler () {
@@ -48,7 +48,33 @@ async function getByExecFile () {
   })
 }
 
-module.exports = async () => {
+async function getDetailedFontsByExecFile () {
+  return new Promise(async (resolve, reject) => {
+    execFile(bin2, {maxBuffer: 1024 * 1024 * 10}, (error, stdout, stderr) => {
+      if (error) {
+        reject(error)
+        return
+      }
+
+      try {
+        if (stdout) {
+          const fontData = JSON.parse(stdout)
+          const filteredFonts = fontData.filter(font => 
+            font.familyName && !font_exceptions.includes(font.familyName)
+          )
+          resolve(filteredFonts)
+        } else {
+          resolve([])
+        }
+      } catch (parseError) {
+        console.error('Failed to parse font data:', parseError)
+        resolve([])
+      }
+    })
+  })
+}
+
+module.exports.getFonts = async () => {
   let fonts = []
   try {
     fonts = await getByExecFile()
@@ -59,6 +85,42 @@ module.exports = async () => {
   if (fonts.length === 0) {
     try {
       fonts = await getBySystemProfiler()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  return fonts
+}
+
+module.exports.getDetailedFonts = async () => {
+  let fonts = []
+  try {
+    fonts = await getDetailedFontsByExecFile()
+  } catch (e) {
+    console.error(e)
+  }
+
+  // 如果详细获取失败，回退到基本方法并构造对象
+  if (fonts.length === 0) {
+    try {
+      const basicFonts = await getByExecFile()
+      fonts = basicFonts.map(familyName => ({
+        familyName,
+        postScriptName: familyName
+      }))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  if (fonts.length === 0) {
+    try {
+      const basicFonts = await getBySystemProfiler()
+      fonts = basicFonts.map(familyName => ({
+        familyName,
+        postScriptName: familyName
+      }))
     } catch (e) {
       console.error(e)
     }

@@ -3,13 +3,14 @@
  * @blog http://oldj.net
  */
 
-'use strict'
+"use strict";
 
-require('./index').getFonts()
-  .then(fonts => {
+require("./index")
+  .getFonts2()
+  .then((fonts) => {
     //console.log(fonts)
-    console.log(fonts.join('\n'))
+    console.log(fonts.map((f) => JSON.stringify(f)).join("\n"));
   })
-  .catch(err => {
-    console.log(err)
-  })
+  .catch((err) => {
+    console.log(err);
+  });

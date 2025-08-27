@@ -1,5 +1,4 @@
 /**
- * index.d.ts
  * @author: oldj
  * @homepage: https://oldj.net
  */
@@ -8,6 +7,13 @@ interface IOptions {
   disableQuoting: boolean;
 }
 
-type FontList = string[]
+interface IFontInfo {
+  familyName: string;
+  postScriptName: string;
+}
 
-export function getFonts (options?: IOptions): Promise<FontList>;
+type FontList = string[];
+type DetailedFontList = IFontInfo[];
+
+export function getFonts(options?: IOptions): Promise<FontList>;
+export function getFonts2(options?: IOptions): Promise<DetailedFontList>;
