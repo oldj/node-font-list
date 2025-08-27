@@ -67,10 +67,15 @@ async function getFonts2(options) {
 
   let fonts = await getDetailedFontsFunc();
 
-  // Standardize familyName
+  // Standardize familyName and pass through new attributes
   fonts = fonts.map((font) => ({
+    name: font.familyName,
     familyName: standardize([font.familyName], options)[0],
     postScriptName: font.postScriptName,
+    weight: font.weight || 'regular',
+    style: font.style || 'normal',
+    width: font.width || 'normal',
+    monospace: font.monospace || false,
   }));
 
   // Sort by familyName

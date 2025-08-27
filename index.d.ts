@@ -7,9 +7,14 @@ interface IOptions {
   disableQuoting: boolean;
 }
 
-interface IFontInfo {
+export interface IFontInfo {
+  name: string;
   familyName: string;
   postScriptName: string;
+  weight: string;
+  style: string;
+  width: string;
+  monospace: boolean;
 }
 
 type FontList = string[];

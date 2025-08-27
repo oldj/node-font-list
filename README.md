@@ -101,8 +101,13 @@ Returns detailed font information including both family names and PostScript nam
 **FontInfo interface:**
 ```ts
 interface FontInfo {
-  familyName: string
-  postScriptName: string
+  name: string           // Original family name
+  familyName: string     // Standardized family name
+  postScriptName: string // PostScript name
+  weight: string         // Font weight (ultralight, light, regular, medium, semibold, bold, heavy)
+  style: string          // Font style (normal, italic, oblique)
+  width: string          // Font width (condensed, normal, expanded)
+  monospace: boolean     // Whether the font is monospaced
 }
 ```
 
@@ -110,12 +115,31 @@ interface FontInfo {
 ```js
 [
   {
+    name: 'Adobe Arabic',
     familyName: '"Adobe Arabic"',
-    postScriptName: 'AdobeArabic-Regular'
+    postScriptName: 'AdobeArabic-Regular',
+    weight: 'regular',
+    style: 'normal',
+    width: 'normal',
+    monospace: false
   },
   {
+    name: 'Arial',
     familyName: 'Arial',
-    postScriptName: 'ArialMT'
+    postScriptName: 'ArialMT',
+    weight: 'regular',
+    style: 'normal',
+    width: 'normal',
+    monospace: false
+  },
+  {
+    name: 'Courier New',
+    familyName: '"Courier New"',
+    postScriptName: 'CourierNewPSMT',
+    weight: 'regular',
+    style: 'normal',
+    width: 'normal',
+    monospace: true
   },
   ...
 ]
@@ -128,10 +152,22 @@ interface FontInfo {
 const detailedFonts = await getFonts2()
 console.log(detailedFonts[0].familyName)     // "Adobe Arabic"
 console.log(detailedFonts[0].postScriptName) // AdobeArabic-Regular
+console.log(detailedFonts[0].weight)         // regular
+console.log(detailedFonts[0].style)          // normal
+console.log(detailedFonts[0].width)          // normal
+console.log(detailedFonts[0].monospace)      // false
 
 // With disabled quoting
 const detailedFonts = await getFonts2({ disableQuoting: true })
 console.log(detailedFonts[0].familyName)     // Adobe Arabic
+
+// Filter monospace fonts
+const monospaceFonts = detailedFonts.filter(font => font.monospace)
+console.log(monospaceFonts.map(f => f.familyName))
+
+// Filter bold fonts
+const boldFonts = detailedFonts.filter(font => font.weight === 'bold')
+console.log(boldFonts.map(f => f.familyName))
 ```
 
 ## Platform Support
