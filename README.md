@@ -68,3 +68,65 @@ fontList.getFonts({ disableQuoting: true })
     console.log(err)
   })
 ```
+
+## Get Detailed Font Information
+
+If you need more detailed font information including PostScript names, use the `getFonts2` method:
+
+```js
+const fontList = require('font-list')
+
+fontList.getFonts2()
+  .then(fonts => {
+    console.log(fonts)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+```
+
+or in TypeScript:
+
+```ts
+import { getFonts2 } from 'font-list'
+
+getFonts2()
+  .then(fonts => {
+    console.log(fonts)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+```
+
+The return value `fonts` is an Array of objects, each containing `familyName` and `postScriptName`:
+
+```js
+[
+  {
+    familyName: '"Adobe Arabic"',
+    postScriptName: 'AdobeArabic-Regular'
+  },
+  {
+    familyName: '"Adobe Caslon Pro"',
+    postScriptName: 'ACaslonPro-Regular'
+  },
+  {
+    familyName: 'Arial',
+    postScriptName: 'ArialMT'
+  },
+  ...
+]
+```
+
+The `getFonts2` method also supports the same options as `getFonts`:
+
+```js
+fontList.getFonts2({ disableQuoting: true })
+  .then(fonts => {
+    console.log(fonts)
+  })
+  .catch(err => {
+    console.log(err)
+  })
+```
