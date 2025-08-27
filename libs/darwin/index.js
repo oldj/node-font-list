@@ -3,128 +3,145 @@
  * @blog https://oldj.net
  */
 
-'use strict'
+"use strict";
 
-const path = require('path')
-const execFile = require('child_process').execFile
-const exec = require('child_process').exec
-const util = require('util')
+const path = require("path");
+const execFile = require("child_process").execFile;
+const exec = require("child_process").exec;
+const util = require("util");
 
-const pexec = util.promisify(exec)
+const pexec = util.promisify(exec);
 
-const bin = path.join(__dirname, 'fontlist')
-const bin2 = path.join(__dirname, 'fontlist2')
-const font_exceptions = ['iconfont']
+const bin = path.join(__dirname, "fontlist");
+const bin2 = path.join(__dirname, "fontlist2");
+const font_exceptions = ["iconfont"];
 
-async function getBySystemProfiler () {
-  const cmd = `system_profiler SPFontsDataType | grep "Family:" | awk -F: '{print $2}' | sort | uniq`
-  const {stdout} = await pexec(cmd, {maxBuffer: 1024 * 1024 * 10})
-  return stdout.split('\n').map(f => f.trim()).filter(f => !!f)
+async function getBySystemProfiler() {
+  const cmd = `system_profiler SPFontsDataType | grep "Family:" | awk -F: '{print $2}' | sort | uniq`;
+  const { stdout } = await pexec(cmd, { maxBuffer: 1024 * 1024 * 10 });
+  return stdout
+    .split("\n")
+    .map((f) => f.trim())
+    .filter((f) => !!f);
 }
 
-async function getByExecFile () {
+async function getByExecFile() {
   return new Promise(async (resolve, reject) => {
-    execFile(bin, {maxBuffer: 1024 * 1024 * 10}, (error, stdout, stderr) => {
+    execFile(bin, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
       if (error) {
-        reject(error)
-        return
+        reject(error);
+        return;
       }
 
-      let fonts = []
+      let fonts = [];
       if (stdout) {
         //fonts = fonts.concat(tryToGetFonts(stdout))
-        fonts = fonts.concat(stdout.split('\n'))
+        fonts = fonts.concat(stdout.split("\n"));
       }
       if (stderr) {
         //fonts = fonts.concat(tryToGetFonts(stderr))
-        console.error(stderr)
+        console.error(stderr);
       }
 
-      fonts = Array.from(new Set(fonts))
-        .filter(i => i && !font_exceptions.includes(i))
+      fonts = Array.from(new Set(fonts)).filter(
+        (i) => i && !font_exceptions.includes(i)
+      );
 
-      resolve(fonts)
-    })
-  })
+      resolve(fonts);
+    });
+  });
 }
 
-async function getDetailedFontsByExecFile () {
+async function getDetailedFontsByExecFile() {
   return new Promise(async (resolve, reject) => {
-    execFile(bin2, {maxBuffer: 1024 * 1024 * 10}, (error, stdout, stderr) => {
+    execFile(bin2, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
       if (error) {
-        reject(error)
-        return
+        reject(error);
+        return;
       }
 
       try {
         if (stdout) {
-          const fontData = JSON.parse(stdout)
-          const filteredFonts = fontData.filter(font => 
-            font.familyName && !font_exceptions.includes(font.familyName)
-          )
-          resolve(filteredFonts)
+          const fontData = JSON.parse(stdout);
+          const filteredFonts = fontData.filter(
+            (font) =>
+              font.familyName && !font_exceptions.includes(font.familyName)
+          );
+          resolve(filteredFonts);
         } else {
-          resolve([])
+          resolve([]);
         }
       } catch (parseError) {
-        console.error('Failed to parse font data:', parseError)
-        resolve([])
+        console.error("Failed to parse font data:", parseError);
+        resolve([]);
       }
-    })
-  })
+    });
+  });
 }
 
-module.exports.getFonts = async () => {
-  let fonts = []
+const getFonts = async () => {
+  let fonts = [];
   try {
-    fonts = await getByExecFile()
+    fonts = await getByExecFile();
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
 
   if (fonts.length === 0) {
     try {
-      fonts = await getBySystemProfiler()
+      fonts = await getBySystemProfiler();
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 
-  return fonts
-}
+  return fonts;
+};
 
-module.exports.getDetailedFonts = async () => {
-  let fonts = []
+const getDetailedFonts = async () => {
+  let fonts = [];
   try {
-    fonts = await getDetailedFontsByExecFile()
+    fonts = await getDetailedFontsByExecFile();
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
 
-  // 如果详细获取失败，回退到基本方法并构造对象
+  // If detailed retrieval fails, fallback to basic method and construct objects
   if (fonts.length === 0) {
     try {
-      const basicFonts = await getByExecFile()
-      fonts = basicFonts.map(familyName => ({
+      const basicFonts = await getByExecFile();
+      fonts = basicFonts.map((familyName) => ({
         familyName,
-        postScriptName: familyName
-      }))
+        postScriptName: familyName,
+      }));
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 
   if (fonts.length === 0) {
     try {
-      const basicFonts = await getBySystemProfiler()
-      fonts = basicFonts.map(familyName => ({
+      const basicFonts = await getBySystemProfiler();
+      fonts = basicFonts.map((familyName) => ({
         familyName,
-        postScriptName: familyName
-      }))
+        postScriptName: familyName,
+      }));
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 
-  return fonts
+  return fonts;
+};
+
+// CommonJS exports
+module.exports = {
+  getFonts,
+  getDetailedFonts,
+};
+
+// ES module exports (if supported)
+if (typeof exports !== "undefined") {
+  exports.getFonts = getFonts;
+  exports.getDetailedFonts = getDetailedFonts;
 }

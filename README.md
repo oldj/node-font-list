@@ -1,115 +1,117 @@
 # font-list
 
-`font-list` is a Node.js package for listing the fonts available on your system.
+A Node.js package for listing system fonts with support for both CommonJS and ES modules.
 
-Current version supports **MacOS**, **Windows**, and **Linux**.
+[![npm version](https://badge.fury.io/js/font-list.svg)](https://badge.fury.io/js/font-list)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Install
+## Features
+
+- 🖥️ **Cross-platform support**: Works on macOS, Windows, and Linux
+- 📦 **Dual module support**: Compatible with both CommonJS and ES modules
+- 🔍 **Two API methods**: Basic font listing and detailed font information
+- 📝 **TypeScript support**: Includes TypeScript type definitions
+- ⚡ **Async/Promise based**: Modern asynchronous API
+
+## Installation
 
 ```bash
 npm install font-list
 ```
 
-## Usage
+## Quick Start
+
+### CommonJS
 
 ```js
-const fontList = require('font-list')
-
-fontList.getFonts()
-  .then(fonts => {
-    console.log(fonts)
-  })
-  .catch(err => {
-    console.log(err)
-  })
-```
-
-or like this in TypeScript:
-
-```ts
-import { getFonts } from 'font-list'
+const { getFonts } = require('font-list')
 
 getFonts()
   .then(fonts => {
     console.log(fonts)
   })
   .catch(err => {
-    console.log(err)
+    console.error(err)
   })
 ```
 
-The return value `fonts` is an Array, looks like:
-
-```
-[ '"Adobe Arabic"',
-  '"Adobe Caslon Pro"',
-  '"Adobe Devanagari"',
-  '"Adobe Fan Heiti Std"',
-  '"Adobe Fangsong Std"',
-  'Arial',
-  ...
-  ]
-```
-
-If the font name contains spaces, the name will be wrapped in double quotes, otherwise there will be no double quotes,
-for example: `'"Adobe Arabic"'`, `'Arial'`.
-
-If you don't want font names that contains spaces to be wrapped in double quotes, pass the options object
-with `disableQuoting` set to true when calling the method `getFonts`:
+### ES Modules
 
 ```js
-const fontList = require('font-list')
+import { getFonts } from 'font-list'
 
-fontList.getFonts({ disableQuoting: true })
-  .then(fonts => {
-    console.log(fonts)
-  })
-  .catch(err => {
-    console.log(err)
-  })
+const fonts = await getFonts()
+console.log(fonts)
 ```
 
-## Get Detailed Font Information
-
-If you need more detailed font information including PostScript names, use the `getFonts2` method:
-
-```js
-const fontList = require('font-list')
-
-fontList.getFonts2()
-  .then(fonts => {
-    console.log(fonts)
-  })
-  .catch(err => {
-    console.log(err)
-  })
-```
-
-or in TypeScript:
+### TypeScript
 
 ```ts
-import { getFonts2 } from 'font-list'
+import { getFonts, FontInfo } from 'font-list'
 
-getFonts2()
-  .then(fonts => {
-    console.log(fonts)
-  })
-  .catch(err => {
-    console.log(err)
-  })
+const fonts: string[] = await getFonts()
+const detailedFonts: FontInfo[] = await getFonts2()
 ```
 
-The return value `fonts` is an Array of objects, each containing `familyName` and `postScriptName`:
+## API Reference
 
+### `getFonts(options?)`
+
+Returns a list of font family names available on the system.
+
+**Parameters:**
+- `options` (optional): Configuration object
+  - `disableQuoting` (boolean): If `true`, font names with spaces won't be wrapped in quotes. Default: `false`
+
+**Returns:** `Promise<string[]>`
+
+**Example output:**
+```js
+[
+  '"Adobe Arabic"',
+  '"Adobe Caslon Pro"',
+  'Arial',
+  'Helvetica',
+  ...
+]
+```
+
+**Usage examples:**
+
+```js
+// Default behavior (with quotes for names containing spaces)
+const fonts = await getFonts()
+// Result: ['"Adobe Arabic"', 'Arial', ...]
+
+// Disable quoting
+const fonts = await getFonts({ disableQuoting: true })
+// Result: ['Adobe Arabic', 'Arial', ...]
+```
+
+### `getFonts2(options?)`
+
+Returns detailed font information including both family names and PostScript names.
+
+**Parameters:**
+- `options` (optional): Same as `getFonts()`
+  - `disableQuoting` (boolean): Default: `false`
+
+**Returns:** `Promise<FontInfo[]>`
+
+**FontInfo interface:**
+```ts
+interface FontInfo {
+  familyName: string
+  postScriptName: string
+}
+```
+
+**Example output:**
 ```js
 [
   {
     familyName: '"Adobe Arabic"',
     postScriptName: 'AdobeArabic-Regular'
-  },
-  {
-    familyName: '"Adobe Caslon Pro"',
-    postScriptName: 'ACaslonPro-Regular'
   },
   {
     familyName: 'Arial',
@@ -119,14 +121,62 @@ The return value `fonts` is an Array of objects, each containing `familyName` an
 ]
 ```
 
-The `getFonts2` method also supports the same options as `getFonts`:
+**Usage examples:**
 
 ```js
-fontList.getFonts2({ disableQuoting: true })
-  .then(fonts => {
-    console.log(fonts)
-  })
-  .catch(err => {
-    console.log(err)
-  })
+// Get detailed font information
+const detailedFonts = await getFonts2()
+console.log(detailedFonts[0].familyName)     // "Adobe Arabic"
+console.log(detailedFonts[0].postScriptName) // AdobeArabic-Regular
+
+// With disabled quoting
+const detailedFonts = await getFonts2({ disableQuoting: true })
+console.log(detailedFonts[0].familyName)     // Adobe Arabic
 ```
+
+## Platform Support
+
+| Platform | Method | Implementation |
+|----------|--------|--------------|
+| macOS | `system_profiler` | Uses system font database |
+| Windows | PowerShell/VBS | Registry and system font queries |
+| Linux | `fc-list` | Fontconfig library |
+
+## Module Formats
+
+This package supports both CommonJS and ES modules through dual package exports:
+
+```js
+// CommonJS
+const { getFonts, getFonts2 } = require('font-list')
+
+// ES Modules
+import { getFonts, getFonts2 } from 'font-list'
+
+// Default export (ES Modules)
+import fontList from 'font-list'
+const fonts = await fontList.getFonts()
+```
+
+## Error Handling
+
+```js
+try {
+  const fonts = await getFonts()
+  console.log(`Found ${fonts.length} fonts`)
+} catch (error) {
+  console.error('Failed to get fonts:', error.message)
+}
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT © [oldj](https://github.com/oldj)
+
+## Repository
+
+[https://github.com/oldj/node-font-list](https://github.com/oldj/node-font-list)

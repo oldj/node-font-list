@@ -9,15 +9,15 @@ int main(int argc, const char * argv[]) {
         NSMutableArray *fontInfoArray = [[NSMutableArray alloc] init];
         
         for (NSString *familyName in fontFamilyNames) {
-            // 获取该字体族的所有字体
+            // Get all fonts in this font family
             NSArray *fontNames = [fontManager availableMembersOfFontFamily:familyName];
             
             if (fontNames && fontNames.count > 0) {
-                // 取第一个字体作为代表
+                // Use the first font as representative
                 NSArray *fontInfo = [fontNames objectAtIndex:0];
                 NSString *postScriptName = [fontInfo objectAtIndex:0];
                 
-                // 创建字体信息字典
+                // Create font info dictionary
                 NSDictionary *fontDict = @{
                     @"familyName": familyName,
                     @"postScriptName": postScriptName
@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
                 
                 [fontInfoArray addObject:fontDict];
             } else {
-                // 如果没有找到具体字体，尝试创建一个默认字体
+                // If no specific font found, try to create a default font
                 NSFont *font = [NSFont fontWithName:familyName size:12.0];
                 if (font) {
                     NSDictionary *fontDict = @{
@@ -34,7 +34,7 @@ int main(int argc, const char * argv[]) {
                     };
                     [fontInfoArray addObject:fontDict];
                 } else {
-                    // 如果都失败了，只返回 familyName
+                    // If all fails, return only familyName
                     NSDictionary *fontDict = @{
                         @"familyName": familyName,
                         @"postScriptName": familyName
@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        // 输出 JSON 格式
+        // Output JSON format
         NSError *error;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:fontInfoArray
                                                            options:NSJSONWritingPrettyPrinted
