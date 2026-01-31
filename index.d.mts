@@ -1,8 +1,3 @@
-/**
- * @author: oldj
- * @homepage: https://oldj.net
- */
-
 interface IOptions {
   disableQuoting: boolean;
 }

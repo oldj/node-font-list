@@ -1,14 +1,19 @@
 {
   "name": "font-list",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "list system fonts",
   "main": "index.js",
   "module": "index.mjs",
   "exports": {
     ".": {
-      "import": "./index.mjs",
-      "require": "./index.js",
-      "types": "./index.d.ts"
+      "import": {
+        "types": "./index.d.mts",
+        "default": "./index.mjs"
+      },
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./index.js"
+      }
     }
   },
   "types": "index.d.ts",
