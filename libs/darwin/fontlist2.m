@@ -5,66 +5,96 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
         NSFontManager *fontManager = [NSFontManager sharedFontManager];
         NSArray *fontFamilyNames = [[fontManager availableFontFamilies] sortedArrayUsingSelector:@selector(compare:)];
-        
+
         printf("[\n");
-        
+
         for (NSUInteger i = 0; i < [fontFamilyNames count]; i++) {
             NSString *familyName = [fontFamilyNames objectAtIndex:i];
-            
-            // Get all fonts in this font family
-            NSArray *fontNames = [fontManager availableMembersOfFontFamily:familyName];
-            
+
+            NSArray *fontMembers = [fontManager availableMembersOfFontFamily:familyName];
             NSString *postScriptName = familyName;
-            if (fontNames && fontNames.count > 0) {
-                NSArray *fontInfo = [fontNames objectAtIndex:0];
+            NSString *memberStyleName = @"";
+            unsigned int memberTraitMask = 0;
+            if (fontMembers && fontMembers.count > 0) {
+                NSArray *fontInfo = [fontMembers objectAtIndex:0];
                 postScriptName = [fontInfo objectAtIndex:0];
+                if ([fontInfo count] > 1) {
+                    memberStyleName = [fontInfo objectAtIndex:1];
+                }
+                if ([fontInfo count] > 3) {
+                    memberTraitMask = [[fontInfo objectAtIndex:3] unsignedIntValue];
+                }
             }
-            
-            // Simple attribute detection based on font name
+
             NSString *weight = @"regular";
             NSString *style = @"normal";
             NSString *width = @"normal";
             NSString *monospace = @"false";
-            
-            // Basic weight detection from font name
-            NSString *lowerName = [postScriptName lowercaseString];
-            if ([lowerName containsString:@"ultralight"] || [lowerName containsString:@"thin"]) {
-                weight = @"ultralight";
-            } else if ([lowerName containsString:@"light"]) {
-                weight = @"light";
-            } else if ([lowerName containsString:@"medium"]) {
-                weight = @"medium";
-            } else if ([lowerName containsString:@"semibold"] || [lowerName containsString:@"demibold"]) {
-                weight = @"semibold";
-            } else if ([lowerName containsString:@"bold"]) {
-                weight = @"bold";
-            } else if ([lowerName containsString:@"heavy"] || [lowerName containsString:@"black"]) {
-                weight = @"heavy";
+
+            NSFont *font = [NSFont fontWithName:postScriptName size:12.0];
+            if (font) {
+                NSFontDescriptor *descriptor = [font fontDescriptor];
+                NSFontSymbolicTraits traits = [descriptor symbolicTraits];
+
+                if (traits & NSFontMonoSpaceTrait) {
+                    monospace = @"true";
+                }
+                if (traits & NSFontItalicTrait) {
+                    style = @"italic";
+                }
+                if (traits & NSFontCondensedTrait) {
+                    width = @"condensed";
+                } else if (traits & NSFontExpandedTrait) {
+                    width = @"expanded";
+                }
+
+                NSDictionary *traitsDict = [descriptor objectForKey:NSFontTraitsAttribute];
+                NSNumber *weightNum = traitsDict[NSFontWeightTrait];
+                if (weightNum) {
+                    CGFloat w = [weightNum doubleValue];
+                    if (w <= -0.6)      weight = @"ultralight";
+                    else if (w <= -0.3) weight = @"light";
+                    else if (w <= 0.1)  weight = @"regular";
+                    else if (w <= 0.25) weight = @"medium";
+                    else if (w <= 0.35) weight = @"semibold";
+                    else if (w <= 0.5)  weight = @"bold";
+                    else                weight = @"heavy";
+                }
             }
-            
-            // Basic style detection
-            if ([lowerName containsString:@"italic"] || [lowerName containsString:@"oblique"]) {
+
+            NSString *fallbackName = [[NSString stringWithFormat:@"%@ %@ %@", familyName, postScriptName, memberStyleName] lowercaseString];
+            if ([weight isEqualToString:@"regular"]) {
+                if ([fallbackName containsString:@"ultralight"] || [fallbackName containsString:@"ultra light"] ||
+                    [fallbackName containsString:@"thin"]) {
+                    weight = @"ultralight";
+                } else if ([fallbackName containsString:@"light"]) {
+                    weight = @"light";
+                } else if ([fallbackName containsString:@"medium"]) {
+                    weight = @"medium";
+                } else if ([fallbackName containsString:@"semibold"] || [fallbackName containsString:@"semi bold"] ||
+                           [fallbackName containsString:@"demibold"] || [fallbackName containsString:@"demi bold"]) {
+                    weight = @"semibold";
+                } else if ([fallbackName containsString:@"bold"] || (memberTraitMask & NSBoldFontMask)) {
+                    weight = @"bold";
+                } else if ([fallbackName containsString:@"heavy"] || [fallbackName containsString:@"black"]) {
+                    weight = @"heavy";
+                }
+            }
+            if ([style isEqualToString:@"normal"] &&
+                ([fallbackName containsString:@"italic"] || [fallbackName containsString:@"oblique"] ||
+                 (memberTraitMask & NSItalicFontMask))) {
                 style = @"italic";
             }
-            
-            // Basic width detection
-            if ([lowerName containsString:@"condensed"] || [lowerName containsString:@"narrow"]) {
-                width = @"condensed";
-            } else if ([lowerName containsString:@"expanded"] || [lowerName containsString:@"extended"]) {
-                width = @"expanded";
+            if ([width isEqualToString:@"normal"]) {
+                if ([fallbackName containsString:@"condensed"] || [fallbackName containsString:@"narrow"] ||
+                    (memberTraitMask & NSCondensedFontMask) || (memberTraitMask & NSNarrowFontMask)) {
+                    width = @"condensed";
+                } else if ([fallbackName containsString:@"expanded"] || [fallbackName containsString:@"extended"] ||
+                           (memberTraitMask & NSExpandedFontMask)) {
+                    width = @"expanded";
+                }
             }
-            
-            // Basic monospace detection
-            if ([lowerName containsString:@"mono"] || [lowerName containsString:@"courier"] || 
-                [lowerName containsString:@"console"] || [lowerName containsString:@"terminal"] ||
-                [lowerName containsString:@"fixed"] || [lowerName containsString:@"typewriter"] ||
-                [lowerName containsString:@"source"] || [lowerName containsString:@"code"] ||
-                [lowerName containsString:@"fira"] || [lowerName containsString:@"jetbrains"] ||
-                [lowerName containsString:@"menlo"] || [lowerName containsString:@"monaco"]) {
-                monospace = @"true";
-            }
-            
-            // Output JSON manually
+
             printf("  {\n");
             printf("    \"familyName\": \"%s\",\n", [familyName UTF8String]);
             printf("    \"postScriptName\": \"%s\",\n", [postScriptName UTF8String]);
@@ -72,14 +102,9 @@ int main(int argc, const char * argv[]) {
             printf("    \"style\": \"%s\",\n", [style UTF8String]);
             printf("    \"width\": \"%s\",\n", [width UTF8String]);
             printf("    \"monospace\": %s\n", [monospace UTF8String]);
-            
-            if (i < [fontFamilyNames count] - 1) {
-                printf("  },\n");
-            } else {
-                printf("  }\n");
-            }
+            printf(i < [fontFamilyNames count] - 1 ? "  },\n" : "  }\n");
         }
-        
+
         printf("]\n");
     }
     return 0;
