@@ -13,8 +13,17 @@ int main(int argc, const char * argv[]) {
 
             NSArray *fontMembers = [fontManager availableMembersOfFontFamily:familyName];
             NSString *postScriptName = familyName;
+            NSString *memberStyleName = @"";
+            unsigned int memberTraitMask = 0;
             if (fontMembers && fontMembers.count > 0) {
-                postScriptName = [[fontMembers objectAtIndex:0] objectAtIndex:0];
+                NSArray *fontInfo = [fontMembers objectAtIndex:0];
+                postScriptName = [fontInfo objectAtIndex:0];
+                if ([fontInfo count] > 1) {
+                    memberStyleName = [fontInfo objectAtIndex:1];
+                }
+                if ([fontInfo count] > 3) {
+                    memberTraitMask = [[fontInfo objectAtIndex:3] unsignedIntValue];
+                }
             }
 
             NSString *weight = @"regular";
@@ -50,6 +59,39 @@ int main(int argc, const char * argv[]) {
                     else if (w <= 0.35) weight = @"semibold";
                     else if (w <= 0.5)  weight = @"bold";
                     else                weight = @"heavy";
+                }
+            }
+
+            NSString *fallbackName = [[NSString stringWithFormat:@"%@ %@ %@", familyName, postScriptName, memberStyleName] lowercaseString];
+            if ([weight isEqualToString:@"regular"]) {
+                if ([fallbackName containsString:@"ultralight"] || [fallbackName containsString:@"ultra light"] ||
+                    [fallbackName containsString:@"thin"]) {
+                    weight = @"ultralight";
+                } else if ([fallbackName containsString:@"light"]) {
+                    weight = @"light";
+                } else if ([fallbackName containsString:@"medium"]) {
+                    weight = @"medium";
+                } else if ([fallbackName containsString:@"semibold"] || [fallbackName containsString:@"semi bold"] ||
+                           [fallbackName containsString:@"demibold"] || [fallbackName containsString:@"demi bold"]) {
+                    weight = @"semibold";
+                } else if ([fallbackName containsString:@"bold"] || (memberTraitMask & NSBoldFontMask)) {
+                    weight = @"bold";
+                } else if ([fallbackName containsString:@"heavy"] || [fallbackName containsString:@"black"]) {
+                    weight = @"heavy";
+                }
+            }
+            if ([style isEqualToString:@"normal"] &&
+                ([fallbackName containsString:@"italic"] || [fallbackName containsString:@"oblique"] ||
+                 (memberTraitMask & NSItalicFontMask))) {
+                style = @"italic";
+            }
+            if ([width isEqualToString:@"normal"]) {
+                if ([fallbackName containsString:@"condensed"] || [fallbackName containsString:@"narrow"] ||
+                    (memberTraitMask & NSCondensedFontMask) || (memberTraitMask & NSNarrowFontMask)) {
+                    width = @"condensed";
+                } else if ([fallbackName containsString:@"expanded"] || [fallbackName containsString:@"extended"] ||
+                           (memberTraitMask & NSExpandedFontMask)) {
+                    width = @"expanded";
                 }
             }
 
