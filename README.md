@@ -209,6 +209,42 @@ try {
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+### Darwin helper binaries
+
+The macOS implementation includes native Objective-C helper binaries at
+`libs/darwin/fontlist` and `libs/darwin/fontlist2`. These binaries are kept in
+git so macOS users can clone the repository and run it without a local build
+step.
+
+If you change `libs/darwin/fontlist.m` or `libs/darwin/fontlist2.m`, rebuild the
+helper binaries on macOS before submitting the change:
+
+```bash
+npm run build:darwin
+```
+
+This command requires macOS and Xcode Command Line Tools. It produces universal
+`x86_64` and `arm64` binaries with a default macOS deployment target of `11.0`.
+Set `MACOSX_DEPLOYMENT_TARGET` before running the command to override the target
+for a release build. Windows and Linux contributors do not need to run it for
+JavaScript, type definition, documentation, or platform-specific changes outside
+`libs/darwin`.
+
+Pull requests should include Darwin binary diffs only when the corresponding
+Objective-C source files changed.
+
+### Publishing
+
+Releases should be published from macOS. `npm publish` runs `prepublishOnly`,
+which rebuilds the Darwin helper binaries before the package is packed and
+published.
+
+To inspect the package contents before publishing, run:
+
+```bash
+npm run pack:check
+```
+
 ## License
 
 MIT © [oldj](https://github.com/oldj)

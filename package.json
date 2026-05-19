@@ -18,7 +18,10 @@
   },
   "types": "index.d.ts",
   "scripts": {
+    "build:darwin": "./scripts/build-darwin.sh",
     "demo": "node demo.js",
+    "pack:check": "npm pack --dry-run",
+    "prepublishOnly": "npm run build:darwin",
     "test": "echo \"Error: no test specified\" && exit 1",
     "p": "npm publish --access public"
   },
