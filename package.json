@@ -4,6 +4,16 @@
   "description": "list system fonts",
   "main": "index.js",
   "module": "index.mjs",
+  "files": [
+    "index.js",
+    "index.mjs",
+    "index.d.ts",
+    "index.d.cts",
+    "index.d.mts",
+    "libs/",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "import": {
