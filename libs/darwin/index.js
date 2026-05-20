@@ -13,7 +13,6 @@ const util = require("util");
 const pexec = util.promisify(exec);
 
 const bin = path.join(__dirname, "fontlist");
-const bin2 = path.join(__dirname, "fontlist2");
 const font_exceptions = ["iconfont"];
 
 async function getBySystemProfiler() {
@@ -54,7 +53,7 @@ async function getByExecFile() {
 
 async function getDetailedFontsByExecFile() {
   return new Promise(async (resolve, reject) => {
-    execFile(bin2, { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
+    execFile(bin, ["--detail"], { maxBuffer: 1024 * 1024 * 10 }, (error, stdout, stderr) => {
       if (error) {
         reject(error);
         return;
