@@ -84,7 +84,9 @@ describe("darwin font helper", { skip: skipReason }, () => {
       pexecFile(bin, ["--detail"], { maxBuffer: MAX_BUFFER }),
       pexecFile(bin, ["-d"], { maxBuffer: MAX_BUFFER }),
     ]);
-    assert.equal(shortFlag, longFlag);
+    // Compare parsed content rather than raw stdout: NSDictionary key order
+    // is not guaranteed across separate processes.
+    assert.deepEqual(JSON.parse(shortFlag), JSON.parse(longFlag));
   });
 
   test("binary: simple and --detail return the same font count", async () => {
@@ -145,6 +147,43 @@ describe("darwin font helper", { skip: skipReason }, () => {
         `unexpected width ${JSON.stringify(f.width)} on ${f.name}`
       );
       assert.equal(typeof f.monospace, "boolean");
+    }
+  });
+
+  test("JS API: getFonts2 reflects fontlist --detail (rules out silent fallback)", async () => {
+    const { stdout } = await pexecFile(bin, ["--detail"], {
+      maxBuffer: MAX_BUFFER,
+    });
+    const raw = JSON.parse(stdout);
+    // Mirror the font_exceptions filter in libs/darwin/index.js
+    const rawFiltered = raw.filter((r) => r.familyName !== "iconfont");
+
+    const fonts = await getFonts2();
+    assert.equal(
+      fonts.length,
+      rawFiltered.length,
+      "getFonts2 count must equal --detail count (otherwise the fallback path was taken)"
+    );
+
+    // Align by `name` (untouched by standardize), then compare metadata
+    const rawByName = new Map(rawFiltered.map((r) => [r.familyName, r]));
+    for (const f of fonts) {
+      const r = rawByName.get(f.name);
+      assert.ok(
+        r,
+        `${JSON.stringify(f.name)} from getFonts2 missing in --detail output`
+      );
+      assert.equal(
+        f.postScriptName,
+        r.postScriptName,
+        `postScriptName mismatch on ${f.name}: got ${JSON.stringify(
+          f.postScriptName
+        )}, expected ${JSON.stringify(r.postScriptName)}`
+      );
+      assert.equal(f.weight, r.weight, `weight mismatch on ${f.name}`);
+      assert.equal(f.style, r.style, `style mismatch on ${f.name}`);
+      assert.equal(f.width, r.width, `width mismatch on ${f.name}`);
+      assert.equal(f.monospace, r.monospace, `monospace mismatch on ${f.name}`);
     }
   });
 });

@@ -9,11 +9,9 @@ static void printSimpleList(NSArray *fontFamilyNames) {
 }
 
 static void printDetailedJSON(NSArray *fontFamilyNames, NSFontManager *fontManager) {
-    printf("[\n");
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:[fontFamilyNames count]];
 
-    for (NSUInteger i = 0; i < [fontFamilyNames count]; i++) {
-        NSString *familyName = [fontFamilyNames objectAtIndex:i];
-
+    for (NSString *familyName in fontFamilyNames) {
         NSArray *fontMembers = [fontManager availableMembersOfFontFamily:familyName];
         NSString *postScriptName = familyName;
         NSString *memberStyleName = @"";
@@ -32,7 +30,7 @@ static void printDetailedJSON(NSArray *fontFamilyNames, NSFontManager *fontManag
         NSString *weight = @"regular";
         NSString *style = @"normal";
         NSString *width = @"normal";
-        NSString *monospace = @"false";
+        BOOL monospace = NO;
 
         NSFont *font = [NSFont fontWithName:postScriptName size:12.0];
         if (font) {
@@ -40,7 +38,7 @@ static void printDetailedJSON(NSArray *fontFamilyNames, NSFontManager *fontManag
             NSFontSymbolicTraits traits = [descriptor symbolicTraits];
 
             if (traits & NSFontMonoSpaceTrait) {
-                monospace = @"true";
+                monospace = YES;
             }
             if (traits & NSFontItalicTrait) {
                 style = @"italic";
@@ -98,17 +96,27 @@ static void printDetailedJSON(NSArray *fontFamilyNames, NSFontManager *fontManag
             }
         }
 
-        printf("  {\n");
-        printf("    \"familyName\": \"%s\",\n", [familyName UTF8String]);
-        printf("    \"postScriptName\": \"%s\",\n", [postScriptName UTF8String]);
-        printf("    \"weight\": \"%s\",\n", [weight UTF8String]);
-        printf("    \"style\": \"%s\",\n", [style UTF8String]);
-        printf("    \"width\": \"%s\",\n", [width UTF8String]);
-        printf("    \"monospace\": %s\n", [monospace UTF8String]);
-        printf("%s", i < [fontFamilyNames count] - 1 ? "  },\n" : "  }\n");
+        [result addObject:@{
+            @"familyName": familyName,
+            @"postScriptName": postScriptName,
+            @"weight": weight,
+            @"style": style,
+            @"width": width,
+            @"monospace": @(monospace),
+        }];
     }
 
-    printf("]\n");
+    NSError *error = nil;
+    NSData *data = [NSJSONSerialization dataWithJSONObject:result
+                                                   options:NSJSONWritingPrettyPrinted
+                                                     error:&error];
+    if (!data) {
+        fprintf(stderr, "fontlist: failed to serialize JSON: %s\n",
+                error ? [[error localizedDescription] UTF8String] : "unknown error");
+        return;
+    }
+    fwrite([data bytes], 1, [data length], stdout);
+    fputc('\n', stdout);
 }
 
 int main(int argc, const char * argv[]) {
