@@ -209,34 +209,35 @@ try {
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Darwin helper binaries
+### Darwin helper binary
 
-The macOS implementation includes native Objective-C helper binaries at
-`libs/darwin/fontlist` and `libs/darwin/fontlist2`. These binaries are kept in
-git so macOS users can clone the repository and run it without a local build
-step.
+The macOS implementation includes a native Objective-C helper binary at
+`libs/darwin/fontlist`. The binary is kept in git so macOS users can clone the
+repository and run it without a local build step. It supports two modes: no
+arguments prints the simple family-name list, while `--detail` (or `-d`) prints
+a JSON array with weight/style/width/monospace metadata.
 
-If you change `libs/darwin/fontlist.m` or `libs/darwin/fontlist2.m`, rebuild the
-helper binaries on macOS before submitting the change:
+If you change `libs/darwin/fontlist.m`, rebuild the helper binary on macOS
+before submitting the change:
 
 ```bash
 npm run build:darwin
 ```
 
-This command requires macOS and Xcode Command Line Tools. It produces universal
-`x86_64` and `arm64` binaries with a default macOS deployment target of `11.0`.
-Set `MACOSX_DEPLOYMENT_TARGET` before running the command to override the target
-for a release build. Windows and Linux contributors do not need to run it for
-JavaScript, type definition, documentation, or platform-specific changes outside
-`libs/darwin`.
+This command requires macOS and Xcode Command Line Tools. It produces a
+universal binary with `x86_64` and `arm64` slices and a default macOS
+deployment target of `11.0`. Set `MACOSX_DEPLOYMENT_TARGET` before running the
+command to override the target for a release build. Windows and Linux
+contributors do not need to run it for JavaScript, type definition,
+documentation, or platform-specific changes outside `libs/darwin`.
 
-Pull requests should include Darwin binary diffs only when the corresponding
-Objective-C source files changed.
+Pull requests should include the Darwin binary diff only when the
+Objective-C source file changed.
 
 ### Publishing
 
 Releases should be published from macOS. `npm publish` runs `prepublishOnly`,
-which rebuilds the Darwin helper binaries before the package is packed and
+which rebuilds the Darwin helper binary before the package is packed and
 published.
 
 To inspect the package contents before publishing, run:

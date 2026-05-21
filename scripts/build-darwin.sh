@@ -48,6 +48,5 @@ build_binary() {
 }
 
 build_binary "$DARWIN_DIR/fontlist.m" "$DARWIN_DIR/fontlist"
-build_binary "$DARWIN_DIR/fontlist2.m" "$DARWIN_DIR/fontlist2"
 
-echo "Built Darwin font helper binaries."
+echo "Built Darwin font helper binary."
