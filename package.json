@@ -33,6 +33,7 @@
     "pack:check": "npm pack --dry-run",
     "prepublishOnly": "npm run build:darwin",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:darwin": "node --test test/darwin.test.mjs",
     "p": "npm publish --access public"
   },
   "keywords": [
